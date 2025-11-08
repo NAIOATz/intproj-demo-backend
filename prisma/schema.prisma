@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model studentPlan {
+  studentId Int      @id @map("student_id")
+  planId    Int      @map("plan_id")
+  createdAt DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.DateTime(0)
+
+  studyPlan studyPlan @relation(fields: [planId], references: [id], map: "Enroll")
+
+  @@index([planId], map: "fk_students_plans_study_plan_idx")
+  @@map("students_plans") // table จริงใน DB
+}
+
+model studyPlan {
+  id           Int               @id @default(autoincrement())
+  planCode     StudyPlanPlanCode @unique(map: "plan_code_UNIQUE") @map("plan_code")
+  nameEng      String            @map("name_eng") @db.Char(60)
+  nameTh       String            @map("name_th") @db.Char(100)
+  studentPlans studentPlan[]
+
+  @@map("study_plan") // table จริงใน DB
+}
+
+enum StudyPlanPlanCode {
+  FE
+  FS
+  BE
+  DS
+  AI
+  DE
+  UX
+  DB
+  DA
+}
